@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🏛️ امپراتوری تاریخ آهنین</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;user-select:none}
+        body{background:#0a0a12;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:5px}
+        .بسته-بازی{background:linear-gradient(145deg,#0f1422,#1a1a2e);border-radius:16px;padding:12px;border:1px solid #2a2a5a;max-width:480px;width:100%;max-height:98vh;overflow-y:auto;box-shadow:0 0 40px rgba(100,50,200,0.15)}
+
+        /* ===== منو ===== */
+        #صفحه-منو{display:block;text-align:center;padding:20px 0}
+        #صفحه-منو .عنوان-بزرگ{color:#ffd700;font-size:28px;font-weight:bold;letter-spacing:2px}
+        #صفحه-منو .عنوان-کوچک{color:#8899bb;font-size:13px;margin:5px 0 15px}
+        #صفحه-منو .زیرنویس{color:#445566;font-size:11px;border-bottom:1px solid #1a2a4a;padding-bottom:15px;margin-bottom:20px}
+        .منو-دکمه{display:block;width:100%;padding:14px;margin-bottom:8px;background:#1a2a4a;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer;border:1px solid #2a4a6a;transition:0.3s;text-align:center}
+        .منو-دکمه:hover{background:#2a4a6a;transform:scale(1.02)}
+        .منو-دکمه.طلایی{border-color:#ffd700;color:#ffd700}
+        .منو-دکمه.قرمز{border-color:#6a1a2a;color:#ff6b6b}
+        .منو-دکمه.بنفش{border-color:#5a2a8a;color:#bb86fc}
+
+        /* ===== انتخاب کشور ===== */
+        #صفحه-انتخاب{display:none}
+        #صفحه-انتخاب .عنوان-صفحه{text-align:center;color:#ffd700;font-size:20px;font-weight:bold}
+        #صفحه-انتخاب .زیرعنوان-صفحه{text-align:center;color:#8899bb;font-size:11px;margin-bottom:10px}
+        .نقشه-انتخاب{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;background:#0a1220;padding:8px;border-radius:12px;border:1px solid #1a2a4a;max-height:400px;overflow-y:auto}
+        .کارت-کشور{background:#0f1625;border-radius:8px;padding:6px 2px;text-align:center;cursor:pointer;border:2px solid #1a2a4a;transition:0.2s;color:#fff}
+        .کارت-کشور:hover{transform:scale(1.04);border-color:#ffd700}
+        .کارت-کشور .پرچم{font-size:24px;display:block}
+        .کارت-کشور .نام-کشور{font-size:10px;font-weight:bold}
+        .کارت-کشور.انتخاب-شده{border-color:#ffd700!important;background:#1a2a4a;box-shadow:0 0 20px rgba(255,215,0,0.3)}
+        .دکمه-شروع{display:block;width:100%;padding:12px;background:#1a3a6a;border:none;border-radius:30px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;border:1px solid #2a5a8a;margin-top:5px}
+        .دکمه-شروع:disabled{opacity:0.4;cursor:not-allowed}
+        #پیام-انتخاب{text-align:center;color:#8899bb;font-size:12px;margin-top:6px;min-height:18px}
+        .دکمه-بازگشت{background:#2a2a4a;border:none;color:#fff;padding:6px;border-radius:30px;cursor:pointer;font-size:12px;margin-top:6px;width:100%;border:1px solid #3a3a5a}
+
+        /* ===== بازی ===== */
+        #صفحه-بازی{display:none}
+        .نوار-بالا{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#0f1625;border-radius:10px;margin-bottom:6px;border:1px solid #1a2a4a;flex-wrap:wrap;gap:2px}
+        .منابع-بازیکن{display:flex;gap:4px;flex-wrap:wrap;font-size:9px;color:#aabbdd}
+        .منابع-بازیکن span{font-weight:bold}
+        .طلایی{color:#ffd700}.فولادی{color:#8ab4f8}.غذایی{color:#4caf50}.جمعیتی{color:#64b5f6}.نظامی{color:#ff6b6b}.تحقیقاتی{color:#bb86fc}.امتیازی{color:#ff79c6}.اتحادی{color:#4caf50}
+        .دکمه-نوبت{background:#1a3a6a;border:none;color:#fff;padding:4px 12px;border-radius:30px;font-weight:bold;cursor:pointer;font-size:10px;border:1px solid #2a5a8a}
+
+        .پنل-کشور{background:#0f1625;border-radius:10px;padding:6px 10px;border:1px solid #1a2a4a;margin-bottom:6px;display:grid;grid-template-columns:1fr 1fr;gap:1px 10px}
+        .پنل-کشور .نام-کشور-بزرگ{font-size:15px;font-weight:bold;color:#ffd700;grid-column:span 2;text-align:center}
+        .پنل-کشور .اطلاعات-ردیف{font-size:9px;color:#aabbdd}
+        .پنل-کشور .اطلاعات-ردیف span{color:#fff}
+        .پنل-کشور .اطلاعات-ردیف.مهم{color:#ffd700}
+
+        .نقشه-بازی{background:#0a1220;border-radius:10px;padding:6px;border:1px solid #1a2a4a;margin-bottom:6px;min-height:160px;display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+        .نقشه-بازی .کشور-نقشه{background:#1a2a4a;border-radius:6px;padding:3px 1px;text-align:center;cursor:pointer;border:2px solid transparent;transition:0.2s;font-size:7px;color:#c0d0e0;min-height:35px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+        .نقشه-بازی .کشور-نقشه:hover{transform:scale(1.03);border-color:#ffffff44}
+        .نقشه-بازی .کشور-نقشه .پرچم-کوچک{font-size:16px}
+        .نقشه-بازی .کشور-نقشه .نام-کوچک{font-size:7px;font-weight:bold}
+        .نقشه-بازی .کشور-نقشه.بازیکن-نقشه{border-color:#ffd700}
+        .نقشه-بازی .کشور-نقشه.متحد-نقشه{border-color:#4caf50}
+        .نقشه-بازی .کشور-نقشه.دشمن-نقشه{border-color:#ff6b6b}
+        .نقشه-بازی .کشور-نقشه.انتخاب-نقشه{border-color:#ffd700!important;box-shadow:0 0 15px rgba(255,215,0,0.3)}
+
+        .پنل-پایین{display:grid;grid-template-columns:1fr;gap:5px}
+        .پنل-عملیات{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+        .دکمه-عملیات{background:#1a2a4a;border:none;color:#fff;padding:5px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:9px;border:1px solid #2a4a6a;text-align:center;transition:0.2s}
+        .دکمه-عملیات:hover:not(:disabled){background:#2a4a6a}
+        .دکمه-عملیات:disabled{opacity:0.4;cursor:not-allowed}
+        .دکمه-عملیات.حمله{background:#6a1a2a;border-color:#8a2a3a}
+        .دکمه-عملیات.تحقیق{background:#3a1a6a;border-color:#5a2a8a}
+        .دکمه-عملیات.دیپلماسی{background:#2a2a6a;border-color:#3a3a8a}
+        .پیام{margin-top:5px;padding:5px 10px;background:#0f1625;border-radius:8px;border-right:3px solid #ffd700;color:#d0d8e8;font-size:10px;min-height:24px;border:1px solid #1a2a4a}
+        .پیام-هشدار{border-right-color:#ff6b6b!important;background:#1a0a0a}
+        .پیام-موفق{border-right-color:#4caf50!important;background:#0a1a0a}
+        .پیام-اتحاد{border-right-color:#4caf50!important;background:#0a1a0a}
+
+        /* مودال */
+        .مودال{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:100;justify-content:center;align-items:center}
+        .مودال.فعال{display:flex}
+        .مودال-محتوای{background:#1a2335;border-radius:16px;padding:15px;max-width:480px;width:95%;max-height:85vh;overflow-y:auto;border:1px solid #2a3a5a}
+        .مودال-محتوای .عنوان-مودال{color:#ffd700;font-size:20px;font-weight:bold;text-align:center;border-bottom:2px solid #2a3a5a;padding-bottom:8px;margin-bottom:10px}
+        .مودال-محتوای .گروه-تحقیق{margin-bottom:10px;background:#0f1625;border-radius:10px;padding:8px 10px;border:1px solid #1a2a4a}
+        .مودال-محتوای .گروه-تحقیق .نام-گروه{color:#aabbdd;font-weight:bold;font-size:13px;border-bottom:1px solid #1a2a4a;padding-bottom:4px;margin-bottom:4px}
+        .مودال-محتوای .گروه-تحقیق .تکنولوژی{background:#0f1625;padding:5px 8px;border-radius:6px;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;border:1px solid #1a2a4a;cursor:pointer;color:#c0d0e0;font-size:11px;transition:0.2s}
+        .مودال-محتوای .گروه-تحقیق .تکنولوژی:hover{border-color:#ffd700}
+        .مودال-محتوای .گروه-تحقیق .تکنولوژی.پژوهش-شده{border-color:#4caf50;opacity:0.5;cursor:default}
+        .مودال-محتوای .بستن-مودال{display:block;width:100px;margin:8px auto 0;padding:8px;background:#4a1a2a;border:none;border-radius:30px;color:#fff;font-weight:bold;cursor:pointer;border:1px solid #6a2a3a}
+
+        @media(max-width:400px){.نقشه-انتخاب{grid-template-columns:repeat(3,1fr)}.نقشه-بازی{grid-template-columns:repeat(3,1fr)}.کارت-کشور .پرچم{font-size:20px}.نقشه-بازی .کشور-نقشه .پرچم-کوچک{font-size:14px}.پنل-کشور{grid-template-columns:1fr;text-align:center}.پنل-کشور .نام-کشور-بزرگ{grid-column:span 1}}
+    </style>
+</head>
+<body>
+
+<div class="بسته-بازی">
+    <!-- ===== منو ===== -->
+    <div id="صفحه-منو">
+        <div class="عنوان-بزرگ">🏛️ امپراتوری تاریخ آهنین</div>
+        <div class="عنوان-کوچک">Iron Age Empire</div>
+        <div class="زیرنویس">⚔️ ترکیبی از ۳ بازی بزرگ استراتژی</div>
+        <button class="منو-دکمه طلایی" onclick="شروع_بازی()">▶ بازی جدید</button>
+        <button class="منو-دکمه" onclick="برو_به_انتخاب()">🌍 انتخاب کشور</button>
+        <button class="منو-دکمه بنفش" onclick="برو_به_تحقیق()">🔬 تحقیق</button>
+        <button class="منو-دکمه قرمز" onclick="خروج()">🚪 خروج</button>
+        <div style="color:#445566;font-size:10px;margin-top:12px;">⚡ عصر تاریخ • امپراتوری آهن • قلب آهنین</div>
+    </div>
+
+    <!-- ===== انتخاب کشور ===== -->
+    <div id="صفحه-انتخاب">
+        <div class="عنوان-صفحه">🌍 انتخاب امپراتوری</div>
+        <div class="زیرعنوان-صفحه">کشور خود را انتخاب کنید</div>
+        <div class="نقشه-انتخاب" id="نقشه-انتخاب-کشور"></div>
+        <button class="دکمه-شروع" id="دکمه-شروع-بازی" disabled onclick="شروع_بازی_با_کشور()">⚔️ شروع تاریخ</button>
+        <div id="پیام-انتخاب">👆 روی یک کشور کلیک کنید</div>
+        <button class="دکمه-بازگشت" onclick="برو_به_منو()">🔙 بازگشت</button>
+    </div>
+
+    <!-- ===== بازی ===== -->
+    <div id="صفحه-بازی">
+        <div class="نوار-بالا">
+            <div class="منابع-بازیکن" id="منابع-بازیکن">
+                <span>💰 <span class="طلایی" id="طلای-بازیکن">۰</span></span>
+                <span>⚙️ <span class="فولادی" id="فولاد-بازیکن">۰</span></span>
+                <span>🌾 <span class="غذایی" id="غذای-بازیکن">۰</span></span>
+                <span>👥 <span class="جمعیتی" id="جمعیت-بازیکن">۰</span></span>
+                <span>⚔️ <span class="نظامی" id="ارتش-بازیکن">۰</span></span>
+                <span>🔬 <span class="تحقیقاتی" id="تحقیق-بازیکن">۰</span></span>
+                <span>⭐ <span class="امتیازی" id="امتیاز-بازیکن">۰</span></span>
+                <span>⏳ <span id="شمارنده-نوبت">۰</span></span>
+            </div>
+            <button class="دکمه-نوبت" onclick="نوبت_بعدی()">⏳ نوبت</button>
+        </div>
+
+        <div class="پنل-کشور" id="پنل-کشور">
+            <div class="نام-کشور-بزرگ" id="نام-کشور-پنل">🇮🇷 ایران</div>
+            <div class="اطلاعات-ردیف">👤 رهبر: <span id="رهبر-پنل">علی خامنه‌ای</span></div>
+            <div class="اطلاعات-ردیف">🏛️ حکومت: <span id="حکومت-پنل">جمهوری اسلامی</span></div>
+            <div class="اطلاعات-ردیف">🕌 مذهب: <span id="مذهب-پنل">شیعه</span></div>
+            <div class="اطلاعات-ردیف">🏙️ پایتخت: <span id="پایتخت-پنل">تهران</span></div>
+            <div class="اطلاعات-ردیف مهم">⭐ امتیاز: <span id="امتیاز-پنل">۰</span></div>
+            <div class="اطلاعات-ردیف مهم">⚔️ قدرت: <span id="قدرت-پنل">۰</span></div>
+            <div class="اطلاعات-ردیف">🔗 اتحاد: <span id="اتحاد-پنل">غیرمتعهد</span></div>
+        </div>
+
+        <div class="نقشه-بازی" id="نقشه-بازی"></div>
+
+        <div class="پنل-پایین">
+            <div class="پنل-عملیات">
+                <button class="دکمه-عملیات حمله" id="دکمه-حمله" onclick="حمله()" disabled>⚔️ حمله</button>
+                <button class="دکمه-عملیات" onclick="ساخت_ارتش()">🛡️ ارتش</button>
+                <button class="دکمه-عملیات تحقیق" onclick="برو_به_تحقیق()">🔬 تحقیق</button>
+                <button class="دکمه-عملیات دیپلماسی" id="دکمه-دیپلماسی" onclick="دیپلماسی()" disabled>🤝 اتحاد</button>
+            </div>
+        </div>
+
+        <div class="پیام" id="پیام-بازی">🏛️ به امپراتوری تاریخ آهنین خوش آمدید.</div>
+    </div>
+
+    <!-- ===== مودال تحقیق ===== -->
+    <div class="مودال" id="مودال-تحقیق">
+        <div class="مودال-محتوای">
+            <div class="عنوان-مودال">🔬 درخت تحقیق (امپراتوری آهن)</div>
+            <div id="لیست-تحقیق"></div>
+            <button class="بستن-مودال" onclick="بستن_مودال()">✖ بستن</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    //  داده‌های کشورها (۲۰ کشور - ترکیبی از هر ۳ بازی)
+    // ============================================================
+    const داده_کشورها = [
+        { نام: 'ایران', پرچم: '🇮🇷', رهبر: 'علی خامنه‌ای', حکومت: 'جمهوری اسلامی', مذهب: 'شیعه', پایتخت: 'تهران', اتحاد: 'غیرمتعهد', رنگ: '#2a6a2a', طلا: 120, فولاد: 80, غذا: 100, جمعیت: 84, ارتش: 55, امتیاز: 286 },
+        { نام: 'روسیه', پرچم: '🇷🇺', رهبر: 'ولادیمیر پوتین', حکومت: 'جمهوری فدرال', مذهب: 'ارتدکس', پایتخت: 'مسکو', اتحاد: 'پیمان ورشو', رنگ: '#8a1a1a', طلا: 130, فولاد: 140, غذا: 120, جمعیت: 1400, ارتش: 85, امتیاز: 350 },
+        { نام: 'آلمان', پرچم: '🇩🇪', رهبر: 'اولاف شولتس', حکومت: 'جمهوری فدرال', مذهب: 'مسیحی', پایتخت: 'برلین', اتحاد: 'ناتو', رنگ: '#3a3a3a', طلا: 150, فولاد: 110, غذا: 70, جمعیت: 800, ارتش: 70, امتیاز: 320 },
+        { نام: 'آمریکا', پرچم: '🇺🇸', رهبر: 'جو بایدن', حکومت: 'جمهوری فدرال', مذهب: 'مسیحی', پایتخت: 'واشنگتن', اتحاد: 'ناتو', رنگ: '#1a3a8a', طلا: 220, فولاد: 160, غذا: 130, جمعیت: 1100, ارتش: 75, امتیاز: 410 },
+        { نام: 'فرانسه', پرچم: '🇫🇷', رهبر: 'امانوئل مکرون', حکومت: 'جمهوری', مذهب: 'مسیحی', پایتخت: 'پاریس', اتحاد: 'ناتو', رنگ: '#4a3a8a', طلا: 160, فولاد: 85, غذا: 90, جمعیت: 750, ارتش: 50, امتیاز: 280 },
+        { نام: 'بریتانیا', پرچم: '🇬🇧', رهبر: 'ریشی سوناک', حکومت: 'پادشاهی مشروطه', مذهب: 'مسیحی', پایتخت: 'لندن', اتحاد: 'ناتو', رنگ: '#1a4a6a', طلا: 190, فولاد: 90, غذا: 70, جمعیت: 700, ارتش: 55, امتیاز: 300 },
+        { نام: 'چین', پرچم: '🇨🇳', رهبر: 'شی جین پینگ', حکومت: 'جمهوری خلق', مذهب: 'بودایی', پایتخت: 'پکن', اتحاد: 'کمونیست', رنگ: '#6a2a2a', طلا: 110, فولاد: 50, غذا: 150, جمعیت: 1600, ارتش: 110, امتیاز: 380 },
+        { نام: 'ایتالیا', پرچم: '🇮🇹', رهبر: 'جورجا ملونی', حکومت: 'جمهوری', مذهب: 'مسیحی', پایتخت: 'رم', اتحاد: 'محور', رنگ: '#4a7a2a', طلا: 110, فولاد: 50, غذا: 70, جمعیت: 550, ارتش: 40, امتیاز: 240 },
+        { نام: 'هند', پرچم: '🇮🇳', رهبر: 'نارندرا مودی', حکومت: 'جمهوری فدرال', مذهب: 'هندو', پایتخت: 'دهلی', اتحاد: 'غیرمتعهد', رنگ: '#ff9933', طلا: 100, فولاد: 40, غذا: 130, جمعیت: 1400, ارتش: 65, امتیاز: 300 },
+        { نام: 'مصر', پرچم: '🇪🇬', رهبر: 'عبدالفتاح السیسی', حکومت: 'جمهوری', مذهب: 'اسلام', پایتخت: 'قاهره', اتحاد: 'اتحادیه عرب', رنگ: '#8a6a2a', طلا: 80, فولاد: 30, غذا: 60, جمعیت: 450, ارتش: 30, امتیاز: 180 },
+        { نام: 'برزیل', پرچم: '🇧🇷', رهبر: 'لولا داسیلوا', حکومت: 'جمهوری فدرال', مذهب: 'مسیحی', پایتخت: 'برازیلیا', اتحاد: 'غیرمتعهد', رنگ: '#009739', طلا: 90, فولاد: 50, غذا: 110, جمعیت: 800, ارتش: 45, امتیاز: 230 },
+        { نام: 'کانادا', پرچم: '🇨🇦', رهبر: 'جاستین ترودو', حکومت: 'پادشاهی مشروطه', مذهب: 'مسیحی', پایتخت: 'اتاوا', اتحاد: 'ناتو', رنگ: '#ff0000', طلا: 130, فولاد: 70, غذا: 80, جمعیت: 500, ارتش: 35, امتیاز: 260 },
+        { نام: 'پاکستان', پرچم: '🇵🇰', رهبر: 'شهباز شریف', حکومت: 'جمهوری اسلامی', مذهب: 'اسلام', پایتخت: 'اسلام‌آباد', اتحاد: 'غیرمتعهد', رنگ: '#006600', طلا: 70, فولاد: 30, غذا: 80, جمعیت: 600, ارتش: 50, امتیاز: 190 },
+        { نام: 'ترکیه', پرچم: '🇹🇷', رهبر: 'رجب طیب اردوغان', حکومت: 'جمهوری', مذهب: 'اسلام', پایتخت: 'آنکارا', اتحاد: 'ناتو', رنگ: '#e30a17', طلا: 90, فولاد: 45, غذا: 60, جمعیت: 550, ارتش: 40, امتیاز: 210 },
+        { نام: 'اسپانیا', پرچم: '🇪🇸', رهبر: 'پدرو سانچز', حکومت: 'پادشاهی مشروطه', مذهب: 'مسیحی', پایتخت: 'مادرید', اتحاد: 'ناتو', رنگ: '#c60b1e', طلا: 120, فولاد: 50, غذا: 70, جمعیت: 450, ارتش: 35, امتیاز: 240 },
+        { نام: 'کره جنوبی', پرچم: '🇰🇷', رهبر: 'یون سوک یول', حکومت: 'جمهوری', مذهب: 'مسیحی', پایتخت: 'سئول', اتحاد: 'ناتو', رنگ: '#003366', طلا: 160, فولاد: 80, غذا: 60, جمعیت: 500, ارتش: 55, امتیاز: 280 },
+        { نام: 'ژاپن', پرچم: '🇯🇵', رهبر: 'فومیو کیشیدا', حکومت: 'پادشاهی مشروطه', مذهب: 'شینتو', پایتخت: 'توکیو', اتحاد: 'محور', رنگ: '#8a4a1a', طلا: 140, فولاد: 70, غذا: 50, جمعیت: 900, ارتش: 60, امتیاز: 290 },
+        { نام: 'استرالیا', پرچم: '🇦🇺', رهبر: 'آنتونی آلبانیز', حکومت: 'پادشاهی مشروطه', مذهب: 'مسیحی', پایتخت: 'کانبرا', اتحاد: 'ناتو', رنگ: '#00008b', طلا: 110, فولاد: 40, غذا: 70, جمعیت: 400, ارتش: 30, امتیاز: 240 },
+        { نام: 'نیجریه', پرچم: '🇳🇬', رهبر: 'بولا تینوبو', حکومت: 'جمهوری فدرال', مذهب: 'اسلام', پایتخت: 'آبوجا', اتحاد: 'غیرمتعهد', رنگ: '#008751', طلا: 60, فولاد: 25, غذا: 100, جمعیت: 800, ارتش: 40, امتیاز: 170 },
+        { نام: 'آرژانتین', پرچم: '🇦🇷', رهبر: 'خاویر میلئی', حکومت: 'جمهوری فدرال', مذهب: 'مسیحی', پایتخت: 'بوئنوس آیرس', اتحاد: 'غیرمتعهد', رنگ: '#75aadb', طلا: 80, فولاد: 35, غذا: 90, جمعیت: 400, ارتش: 30, امتیاز: 180 },
+    ];
+
+    // ============================================================
+    //  درخت تحقیق (از امپراتوری آهن)
+    // ============================================================
+    const درخت_تحقیق = [
+        { گروه: 'نظامی', رنگ: '#ff6b6b', موارد: [
+            { نام: 'تسلیحات پیشرفته', هزینه: 40, توضیح: 'حمله +۱۵٪' },
+            { نام: 'زره‌های مدرن', هزینه: 50, توضیح: 'دفاع +۲۰٪' },
+            { نام: 'هوایی تاکتیکی', هزینه: 60, توضیح: 'حمله هوایی +۲۵٪' },
+            { نام: 'موشک‌های بالستیک', هزینه: 75, توضیح: 'حمله دوربرد +۳۰٪' }
+        ] },
+        { گروه: 'اقتصادی', رنگ: '#4caf50', موارد: [
+            { نام: 'صنعتی‌سازی', هزینه: 35, توضیح: 'تولید فولاد +۲۰٪' },
+            { نام: 'مدرن‌سازی کشاورزی', هزینه: 40, توضیح: 'تولید غذا +۲۰٪' },
+            { نام: 'بانکداری مدرن', هزینه: 65, توضیح: 'تولید طلا +۲۵٪' }
+        ] },
+        { گروه: 'اجتماعی', رنگ: '#bb86fc', موارد: [
+            { نام: 'آموزش همگانی', هزینه: 30, توضیح: 'تحقیق +۲۵٪' },
+            { نام: 'خدمات درمانی', هزینه: 45, توضیح: 'جمعیت +۲۰٪' },
+            { نام: 'رفاه اجتماعی', هزینه: 55, توضیح: 'رشد جمعیت +۳۰٪' }
+        ] },
+        { گروه: 'اتحادی', رنگ: '#4caf50', موارد: [
+            { نام: 'دیپلماسی پیشرفته', هزینه: 35, توضیح: 'اتحادها +۲۰٪' },
+            { نام: 'پیمان‌های نظامی', هزینه: 50, توضیح: 'حمایت متحدان +۲۵٪' },
+            { نام: 'اتحادیه اقتصادی', هزینه: 60, توضیح: 'تجارت +۳۰٪' }
+        ] }
+    ];
+
+    // ============================================================
+    //  متغیرها
+    // ============================================================
+    let کشورها = [], بازیکن = null, کشور_انتخاب_شده = null;
+    let نوبت = 0, بازی_تمام = false, کشور_انتخاب_شده_برای_بازی = null;
+    let کشور_انتخاب_شده_برای_بازی_موقت = null;
+
+    // ============================================================
+    //  ارجاعات DOM
+    // ============================================================
+    const صفحه_منو = document.getElementById('صفحه-منو');
+    const صفحه_انتخاب = document.getElementById('صفحه-انتخاب');
+    const صفحه_بازی = document.getElementById('صفحه-بازی');
+    const نقشه_انتخاب = document.getElementById('نقشه-انتخاب-کشور');
+    const نقشه_بازی = document.getElementById('نقشه-بازی');
+    const پیام_بازی = document.getElementById('پیام-بازی');
+    const لیست_تحقیق = document.getElementById('لیست-تحقیق');
+    const مودال_تحقیق = document.getElementById('مودال-تحقیق');
+
+    // ============================================================
+    //  منو
+    // ============================================================
+    function شروع_بازی() {
+        صفحه_منو.style.display = 'none';
+        صفحه_انتخاب.style.display = 'block';
+        پر_کردن_نقشه_انتخاب();
+    }
+
+    function برو_به_منو() {
+        صفحه_انتخاب.style.display = 'none';
+        صفحه_بازی.style.display = 'none';
+        صفحه_منو.style.display = 'block';
+    }
+
+    function برو_به_انتخاب() {
+        صفحه_منو.style.display = 'none';
+        صفحه_انتخاب.style.display = 'block';
+        پر_کردن_نقشه_انتخاب();
+    }
+
+    function برو_به_تحقیق() {
+        باز_مودال_تحقیق();
+    }
+
+    function خروج() {
+        if (confirm('آیا می‌خواهید از بازی خارج شوید؟')) {
+            document.body.innerHTML = '<div style="color:#8899bb;text-align:center;padding:50px;font-size:18px;">🚪 بازی بسته شد</div>';
+        }
+    }
+
+    // ============================================================
+    //  انتخاب کشور
+    // ============================================================
+    function انتخاب_کشور(نام, پرچم, عنصر) {
+        document.querySelectorAll('.کارت-کشور').forEach(el => el.classList.remove('انتخاب-شده'));
+        عنصر.classList.add('انتخاب-شده');
+        کشور_انتخاب_شده_برای_بازی_موقت = داده_کشورها.find(ک => ک.نام === نام);
+        document.getElementById('دکمه-شروع-بازی').disabled = false;
+        document.getElementById('پیام-انتخاب').innerHTML = `✅ ${پرچم} ${نام} انتخاب شد!`;
+        document.getElementById('پیام-انتخاب').style.color = '#4caf50';
+    }
+
+    function ساخت_کارت_انتخاب(ک) {
+        const div = document.createElement('div');
+        div.className = 'کارت-کشور';
+        div.innerHTML = `
+            <span class="پرچم">${ک.پرچم}</span>
+            <div class="نام-کشور">${ک.نام}</div>
+            <div class="رهبر-کشور">${ک.رهبر || ''}</div>
+        `;
+        div.onclick = function() { انتخاب_کشور(ک.نام, ک.پرچم, this); };
+        return div;
+    }
+
+    function پر_کردن_نقشه_انتخاب() {
+        نقشه_انتخاب.innerHTML = '';
+        for (let ک of داده_کشورها) {
+            نقشه_انتخاب.appendChild(ساخت_کارت_انتخاب(ک));
+        }
+        document.getElementById('دکمه-شروع-بازی').disabled = true;
+        document.getElementById('پیام-انتخاب').innerHTML = '👆 روی یک کشور کلیک کنید';
+        document.getElementById('پیام-انتخاب').style.color = '#8899bb';
+    }
+
+    function شروع_بازی_با_کشور() {
+        if (!کشور_انتخاب_شده_برای_بازی_موقت) return;
+        کشور_انتخاب_شده_برای_بازی = کشور_انتخاب_شده_برای_بازی_موقت;
+        مقداردهی_بازی();
+    }
+
+    // ============================================================
+    //  مقداردهی بازی
+    // ============================================================
+    function مقداردهی_بازی() {
+        کشورها = داده_کشورها.map(د => ({
+            ...د,
+            زنده: true,
+            طلا: د.طلا + Math.floor(Math.random() * 20 - 10),
+            فولاد: د.فولاد + Math.floor(Math.random() * 15 - 7),
+            غذا: د.غذا + Math.floor(Math.random() * 15 - 7),
+            جمعیت: د.جمعیت + Math.floor(Math.random() * 5 - 2),
+            ارتش: د.ارتش + Math.floor(Math.random() * 8 - 4),
+            تحقیق: 0,
+            امتیاز: د.امتیاز || 200,
+            تکنولوژی: [],
+            روابط: {},
+            متحدان: [],
+        }));
+
+        for (let ک of کشورها) {
+            for (let د of کشورها) {
+                if (ک !== د) {
+                    const پایه = ک.اتحاد === د.اتحاد ? 70 : 35;
+                    ک.روابط[د.نام] = پایه + Math.floor(Math.random() * 20 - 10);
+                }
+            }
+        }
+
+        const انتخاب = کشورها.find(ک => ک.نام === کشور_انتخاب_شده_برای_بازی.نام);
+        if (!انتخاب) return;
+        بازیکن = انتخاب;
+        بازیکن.نام = '⭐ ' + بازیکن.نام;
+        کشور_انتخاب_شده = بازیکن;
+
+        صفحه_انتخاب.style.display = 'none';
+        صفحه_بازی.style.display = 'block';
+
+        نوبت = 0;
+        بازی_تمام = false;
+        به‌روز_پنل_کشور(بازیکن);
+        رسم_نقشه_بازی();
+        به_روز_منابع();
+        نمایش_پیام(`🏛️ شما ${بازیکن.پرچم} ${بازیکن.نام} هستید. اتحاد: ${بازیکن.اتحاد}`, 'پیام-موفق');
+        document.getElementById('دکمه-حمله').disabled = false;
+        document.getElementById('دکمه-دیپلماسی').disabled = false;
+    }
+
+    // ============================================================
+    //  پنل کشور
+    // ============================================================
+    function به‌روز_پنل_کشور(ک) {
+        if (!ک) return;
+        document.getElementById('نام-کشور-پنل').textContent = `${ک.پرچم} ${ک.نام}`;
+        document.getElementById('رهبر-پنل').textContent = ک.رهبر || 'نامشخص';
+        document.getElementById('حکومت-پنل').textContent = ک.حکومت || 'نامشخص';
+        document.getElementById('مذهب-پنل').textContent = ک.مذهب || 'نامشخص';
+        document.getElementById('پایتخت-پنل').textContent = ک.پایتخت || 'نامشخص';
+        document.getElementById('امتیاز-پنل').textContent = Math.floor(ک.امتیاز || 0);
+        document.getElementById('قدرت-پنل').textContent = Math.floor(ک.ارتش + (ک.فولاد || 0) / 10);
+        document.getElementById('اتحاد-پنل').textContent = ک.اتحاد || 'غیرمتعهد';
+    }
+
+    // ============================================================
+    //  توابع بازی
+    // ============================================================
+    function نمایش_پیام(متن, نوع = '') {
+        پیام_بازی.innerHTML = متن;
+        پیام_بازی.className = 'پیام' + (نوع ? ' ' + نوع : '');
+    }
+
+    function به_روز_منابع() {
+        if (!بازیکن) return;
+        document.getElementById('طلای-بازیکن').textContent = Math.floor(بازیکن.طلا);
+        document.getElementById('فولاد-بازیکن').textContent = Math.floor(بازیکن.فولاد);
+        document.getElementById('غذای-بازیکن').textContent = Math.floor(بازیکن.غذا);
+        document.getElementById('جمعیت-بازیکن').textContent = Math.floor(بازیکن.جمعیت);
+        document.getElementById('ارتش-بازیکن').textContent = Math.floor(بازیکن.ارتش);
+        document.getElementById('تحقیق-بازیکن').textContent = Math.floor(بازیکن.تحقیق || 0);
+        document.getElementById('امتیاز-بازیکن').textContent = Math.floor(بازیکن.امتیاز || 0);
+        document.getElementById('شمارنده-نوبت').textContent = نوبت;
+        به‌روز_پنل_کشور(بازیکن);
+    }
+
+    function رسم_نقشه_بازی() {
+        نقشه_بازی.innerHTML = '';
+        const زنده‌ها = کشورها.filter(ک => ک.زنده);
+        for (let ک of زنده‌ها) {
+            const div = document.createElement('div');
+            div.className = 'کشور-نقشه';
+            if (ک === بازیکن) div.classList.add('بازیکن-نقشه');
+            if (ک === کشور_انتخاب_شده) div.classList.add('انتخاب-نقشه');
+            else if (بازیکن && ک.اتحاد === بازیکن.اتحاد && ک !== بازیکن && ک.زنده) div.classList.add('متحد-نقشه');
+            else if (ک !== بازیکن && ک.زنده) div.classList.add('دشمن-نقشه');
+            div.style.background = `linear-gradient(135deg, ${ک.رنگ}66, ${ک.رنگ}22)`;
+            div.innerHTML = `
+                <span class="پرچم-کوچک">${ک.پرچم}</span>
+                <div class="نام-کوچک">${ک.نام}</div>
+                <div style="font-size:6px;opacity:0.6;">⚔️${Math.floor(ک.ارتش)}</div>
+            `;
+            div.onclick = () => { if (ک.زنده) انتخاب_کشور_نقشه(ک); };
+            نقشه_بازی.appendChild(div);
+        }
+    }
+
+    function انتخاب_کشور_نقشه(ک) {
+        if (!ک.زنده) return;
+        کشور_انتخاب_شده = ک;
+        به‌روز_پنل_کشور(ک);
+        رسم_نقشه_بازی();
+        document.getElementById('دکمه-حمله').disabled = (ک === بازیکن || !ک.زنده);
+    }
+
+    // ============================================================
+    //  سیستم اتحاد (از امپراتوری آهن)
+    // ============================================================
+    function دیپلماسی() {
+        if (!کشور_انتخاب_شده || !کشور_انتخاب_شده.زنده || کشور_انتخاب_شده === بازیکن) {
+            نمایش_پیام('❌ یک کشور رو انتخاب کن.', 'پیام-هشدار');
+            return;
+        }
+        const هدف = کشور_انتخاب_شده;
+        if (هدف.اتحاد === بازیکن.اتحاد && بازیکن.اتحاد !== 'غیرمتعهد') {
+            نمایش_پیام(`🤝 شما و ${هدف.نام} در یک اتحاد هستید!`, 'پیام-اتحاد');
+            return;
+        }
+        if (بازیکن.امتیاز < 30) {
+            نمایش_پیام('❌ امتیاز کافی نیست! (نیاز ۳۰)', 'پیام-هشدار');
+            return;
+        }
+        بازیکن.امتیاز -= 30;
+        const اتحاد_جدید = بازیکن.اتحاد === 'غیرمتعهد' ? هدف.اتحاد : بازیکن.اتحاد;
+        بازیکن.اتحاد = اتحاد_جدید;
+        هدف.اتحاد = اتحاد_جدید;
+        بازیکن.روابط[هدف.نام] = Math.min(100, (بازیکن.روابط[هدف.نام] || 50) + 40);
+        هدف.روابط[بازیکن.نام] = Math.min(100, (هدف.روابط[بازیکن.نام] || 50) + 40);
+        نمایش_پیام(`🤝 شما با ${هدف.نام} در اتحاد ${اتحاد_جدید} قرار گرفتید!`, 'پیام-اتحاد');
+        به_روز_منابع();
+        رسم_نقشه_بازی();
+        به‌روز_پنل_کشور(بازیکن);
+    }
+
+    // ============================================================
+    //  عملیات‌ها
+    // ============================================================
+    function حمله() {
+        if (!کشور_انتخاب_شده || !کشور_انتخاب_شده.زنده || کشور_انتخاب_شده === بازیکن) {
+            نمایش_پیام('❌ یک کشور دشمن رو انتخاب کن.', 'پیام-هشدار');
+            return;
+        }
+        if (بازیکن.ارتش < 12) {
+            نمایش_پیام('❌ ارتش کافی نیست! (حداقل ۱۲)', 'پیام-هشدار');
+            return;
+        }
+        const هدف = کشور_انتخاب_شده;
+        const خسارت = Math.floor(بازیکن.ارتش * 0.3 + Math.random() * 10);
+        هدف.ارتش -= خسارت;
+        بازیکن.ارتش -= Math.floor(خسارت * 0.18);
+        نمایش_پیام(`⚔️ شما به ${هدف.نام} حمله کردید! (${خسارت} خسارت)`);
+        if (هدف.ارتش <= 0) {
+            هدف.زنده = false;
+            هدف.ارتش = 0;
+            نمایش_پیام(`💀 ${هدف.نام} سقوط کرد!`, 'پیام-هشدار');
+            بازیکن.طلا += هدف.طلا * 0.3;
+            بازیکن.فولاد += هدف.فولاد * 0.3;
+            بازیکن.امتیاز = (بازیکن.امتیاز || 0) + 15;
+        }
+        به_روز_منابع();
+        رسم_نقشه_بازی();
+        به‌روز_پنل_کشور(بازیکن);
+        بررسی_پایان();
+    }
+
+    function ساخت_ارتش() {
+        if (بازیکن.طلا < 30) {
+            نمایش_پیام('❌ طلا کافی نیست! (نیاز ۳۰)', 'پیام-هشدار');
+            return;
+        }
+        بازیکن.طلا -= 30;
+        بازیکن.ارتش += 8 + Math.floor(Math.random() * 5);
+        نمایش_پیام('✅ ارتش تقویت شد! (+۸ تا ۱۲ نفر)', 'پیام-موفق');
+        به_روز_منابع();
+        رسم_نقشه_بازی();
+        به‌روز_پنل_کشور(بازیکن);
+    }
+
+    function نوبت_بعدی() {
+        if (بازی_تمام || !بازیکن) return;
+        نوبت++;
+        for (let ک of کشورها) {
+            if (!ک.زنده) continue;
+            ک.طلا += Math.max(0.5, (1 + ک.فولاد / 60) * 0.6);
+            ک.فولاد += Math.max(0.3, (0.5 + ک.جمعیت / 400) * 0.5);
+            ک.غذا += Math.max(0.5, (1 + ک.جمعیت / 300) * 0.5);
+            ک.جمعیت += Math.max(0.3, ک.غذا / 120) * 0.3;
+            ک.تحقیق = (ک.تحقیق || 0) + 0.2;
+            ک.امتیاز = (ک.امتیاز || 0) + 0.5;
+            ک.طلا = Math.min(ک.طلا, 800);
+            ک.فولاد = Math.min(ک.فولاد, 400);
+            ک.غذا = Math.min(ک.غذا, 400);
+            ک.جمعیت = Math.min(ک.جمعیت, 2500);
+        }
+        // AI (از قلب آهنین)
+        for (let ک of کشورها) {
+            if (!ک.زنده || ک === بازیکن) continue;
+            if (ک.طلا > 35 && ک.ارتش < 100) {
+                ک.طلا -= 25;
+                ک.ارتش += 5 + Math.floor(Math.random() * 4);
+            }
+            if (ک.تحقیق < 3 && ک.طلا > 40) {
+                ک.طلا -= 30;
+                ک.تحقیق = (ک.تحقیق || 0) + 1;
+            }
+            if (ک.ارتش > 25 && ک.روابط[بازیکن?.نام] < 40 && بازیکن?.زنده) {
+                if (Math.random() < 0.25) {
+                    const خسارت = Math.floor(ک.ارتش * 0.2 + Math.random() * 8);
+                    بازیکن.ارتش -= خسارت;
+                    ک.ارتش -= Math.floor(خسارت * 0.15);
+                    نمایش_پیام(`⚔️ ${ک.پرچم} ${ک.نام} به شما حمله کرد! (${خسارت} خسارت)`, 'پیام-هشدار');
+                    if (بازیکن.ارتش <= 0) {
+                        بازیکن.زنده = false;
+                        بازیکن.ارتش = 0;
+                        نمایش_پیام('💀 شما کشته شدید! بازی تمام شد!', 'پیام-هشدار');
+                        پایان_بازی(false);
+                    }
+                    به_روز_منابع();
+                    رسم_نقشه_بازی();
+                    به‌روز_پنل_کشور(بازیکن);
+                }
+            }
+            if (Math.random() < 0.15 && ک.اتحاد !== 'غیرمتعهد') {
+                const متحدان = کشورها.filter(د => د !== ک && د.زنده && د.اتحاد === ک.اتحاد);
+                for (let م of متحدان) {
+                    ک.روابط[م.نام] = Math.min(100, (ک.روابط[م.نام] || 50) + 5);
+                }
+            }
+        }
+        به_روز_منابع();
+        رسم_نقشه_بازی();
+        به‌روز_پنل_کشور(بازیکن);
+        بررسی_پایان();
+        if (!بازی_تمام) {
+            نمایش_پیام(`⏳ نوبت ${نوبت} - تاریخ در حال تغییر است...`);
+        }
+    }
+
+    function بررسی_پایان() {
+        const زنده‌ها = کشورها.filter(ک => ک.زنده);
+        if (زنده‌ها.length === 1 && زنده‌ها[0] === بازیکن) پایان_بازی(true);
+        else if (!بازیکن?.زنده) پایان_بازی(false);
+    }
+
+    function پایان_بازی(پیروزی) {
+        بازی_تمام = true;
+        document.getElementById('دکمه-نوبت-بعدی').disabled = true;
+        document.getElementById('دکمه-حمله').disabled = true;
+        document.getElementById('دکمه-دیپلماسی').disabled = true;
+        if (پیروزی) نمایش_پیام('🏆 پیروزی! شما جهان را فتح کردید!', 'پیام-موفق');
+        else نمایش_پیام('💀 شکست! امپراتوری شما سقوط کرد.', 'پیام-هشدار');
+    }
+
+    // ============================================================
+    //  مودال تحقیق
+    // ============================================================
+    function باز_مودال_تحقیق() {
+        لیست_تحقیق.innerHTML = '';
+        for (let گروه of درخت_تحقیق) {
+            const divگروه = document.createElement('div');
+            divگروه.className = 'گروه-تحقیق';
+            divگروه.innerHTML = `<div class="نام-گروه" style="color:${گروه.رنگ}">📂 ${گروه.گروه}</div>`;
+            for (let ت of گروه.موارد) {
+                const divت = document.createElement('div');
+                const پژوهش_شده = بازیکن?.تکنولوژی.includes(ت.نام);
+                divت.className = `تکنولوژی ${پژوهش_شده ? 'پژوهش-شده' : ''}`;
+                divت.innerHTML = `
+                    <span class="نام-تکنولوژی">${ت.نام}</span>
+                    <span class="وضعیت-تکنولوژی">${پژوهش_شده ? '✅ پژوهش شده' : `💰 ${ت.هزینه} طلا`}</span>
+                `;
+                if (!پژوهش_شده && بازیکن) {
+                    divت.onclick = () => {
+                        if (بازیکن.طلا < ت.هزینه) {
+                            نمایش_پیام(`❌ طلا کافی نیست! (نیاز ${ت.هزینه})`, 'پیام-هشدار');
+                            return;
+                        }
+                        if (بازیکن.تکنولوژی.includes(ت.نام)) return;
+                        بازیکن.طلا -= ت.هزینه;
+                        بازیکن.تکنولوژی.push(ت.نام);
+                        بازیکن.تحقیق = (بازیکن.تحقیق || 0) + 5;
+                        بازیکن.امتیاز = (بازیکن.امتیاز || 0) + 5;
+                        نمایش_پیام(`🔬 ${ت.نام} پژوهش شد! ${ت.توضیح}`, 'پیام-موفق');
+                        به_روز_منابع();
+                        باز_مودال_تحقیق();
+                    };
+                }
+                divگروه.appendChild(divت);
+            }
+            لیست_تحقیق.appendChild(divگروه);
+        }
+        مودال_تحقیق.classList.add('فعال');
+    }
+
+    function بستن_مودال() {
+        مودال_تحقیق.classList.remove('فعال');
+    }
+
+    // ============================================================
+    //  راه‌اندازی
+    // ============================================================
+    پر_کردن_نقشه_انتخاب();
+    console.log('🏛️ امپراتوری تاریخ آهنین - ترکیبی از ۳ بازی بزرگ');
+    console.log('⚔️ عصر تاریخ + امپراتوری آهن + قلب آهنین');
+</script>
+
+</body>
+                  </html>
